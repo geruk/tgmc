@@ -1,7 +1,8 @@
 package edu.drexel.cs.tgmc;
 
-import org.encog.ml.data.MLDataSet;
-import org.encog.ml.data.basic.BasicMLDataSet;
+import java.io.File;
+
+import org.encog.ml.data.buffer.BufferedMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 
@@ -17,5 +18,7 @@ public class Main {
         network.getStructure().finalizeStructure();
         network.reset();
         System.out.println("Training the neural network..");
+        
+        BufferedMLDataSet data = new BufferedMLDataSet(new File(""));
     }
 }

@@ -3,6 +3,7 @@ package edu.drexel.cs.tgmc;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLDataPair;
@@ -20,18 +21,21 @@ public class Main {
     
     static boolean isBiasInput = true, isBiasHidden1 = true, isBiasHidden2 = true, isBiasOutput = false;
     static int hidden1 = 300, hidden2 = 0;
-    static double threshold = 0.95;
+    static double threshold = 0.99;
     static int minute = 15; static double error = 0;
     static boolean backpropagation = false;
-    static boolean keepRatioGood = true;
-    static String networkFileToLoad = null;
+    static boolean keepRatioGood = true; //true to train on 10k records
+    
+    static String networkFileToLoad = "t00.eg";
+    static String networkFileToSave = null; // if null will save using time
+    static String outputTextFile = "subm.txt";
     
     public static void main(String args[]) {
         System.out.println("Creating network..");
         BasicNetwork network = null;
         MLDataSet data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(true, keepRatioGood, System.getProperty("trainingData")), 318, 1, false, CSVFormat.ENGLISH, false);
         if (networkFileToLoad != null) {
-            EncogDirectoryPersistence.loadObject(new File(networkFileToLoad));
+            network = (BasicNetwork) EncogDirectoryPersistence.loadObject(new File(networkFileToLoad));
         } else {
             network = new BasicNetwork();
             network.addLayer(new BasicLayer(null, isBiasInput, 318));
@@ -70,18 +74,24 @@ public class Main {
         }
         System.out.printf("Training size: %d, Correct with threshold %f: %d", data.getRecordCount(), threshold, ok);
         
-        EncogDirectoryPersistence.saveObject(new File("t00.eg"), network);
+        if (networkFileToSave == null)
+            EncogDirectoryPersistence.saveObject(new File(new Date().toString()), network);
+        else
+            EncogDirectoryPersistence.saveObject(new File(networkFileToSave), network);
 
         System.out.println("Loading evaluation data..");
         data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(false, System.getProperty("evaluationData")), 318, 0, false, CSVFormat.ENGLISH, false);
         int i = 400000;
         try {
-            FileWriter out = new FileWriter("subm.txt");
+            FileWriter out = new FileWriter(outputTextFile);
             for (final MLDataPair pair : data) {
                 i++;
-                if (network.compute(pair.getInput()).getData(0) > threshold ) System.out.printf("%d\n\n", i);
+                if (network.compute(pair.getInput()).getData(0) > threshold ) 
+                {
+                    System.out.printf("%d\n\n", i);
+                    out.write(i + "\n");
+                }
             }
-            out.write(i + "\n\n");
             out.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block

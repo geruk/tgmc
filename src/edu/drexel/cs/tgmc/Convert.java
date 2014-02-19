@@ -24,7 +24,7 @@ import org.encog.util.normalize.target.NormalizationStorageCSV;
  *
  */
 public class Convert {
-    public static String convertToEncog(boolean maintainRatio, String dataFileName) {
+    public static String convertToEncog(boolean isTraining, String dataFileName) {
         String encogData1 = "encogtrain1.csv";
         String encogData2 = "encogtrain2.csv";
         int i = 0;
@@ -40,7 +40,7 @@ public class Convert {
                 if (s==null) break;
                 // try to have the true answers >= 1/2 false answers.
                 if (s.contains("true")) n1++;
-                if (!maintainRatio || i <= 3*n1+5) {
+                if (!isTraining || i <= 3*n1+5) {
                     i++;
                     w.write(s.substring(s.indexOf((int)'.')+3).replace("true", "1.0").replace("false", "0.0"));
                 }
@@ -58,9 +58,11 @@ public class Convert {
                 dn.addInputField(ifd = new InputFieldCSV(true, filtered, j));
                 dn.addOutputField(new OutputFieldRangeMapped(ifd, 0.01 , 0.99));
             }
-            InputField ifd;
-            dn.addInputField(ifd = new InputFieldCSV(false, filtered, 318));
-            dn.addOutputField(new OutputFieldRangeMapped(ifd, 0, 1), true);
+            if (isTraining) {
+                InputField ifd;
+                dn.addInputField(ifd = new InputFieldCSV(false, filtered, 318));
+                dn.addOutputField(new OutputFieldRangeMapped(ifd, 0, 1), true);
+            }
             File out1 = new File(encogData2);
             dn.setCSVFormat(CSVFormat.ENGLISH);
             dn.setTarget(new NormalizationStorageCSV(CSVFormat.ENGLISH, out1));

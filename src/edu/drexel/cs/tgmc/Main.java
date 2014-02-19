@@ -26,7 +26,8 @@ public class Main {
         // 1. Backpropagation Feedforward
         Backpropagation trainingType = new Backpropagation(network, data);
         // 2. ResilientPropagation Feedforward
-        // ResilientPropagation trainingType = new ResilientPropagation(network, data);
+        // MLTrain trainingType = new ResilientPropagation(network, data);
+        //trainingType.setErrorFunction(new NewCalculationFunction());
         
         // 1. Train to x minutes
         EncogUtility.trainConsole(trainingType, network, data, 1);

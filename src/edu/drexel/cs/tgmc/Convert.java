@@ -48,7 +48,7 @@ public class Convert {
                 if (s==null) break;
                 // try to have the true answers >= 1/2 false answers.
                 if (s.contains("true")) n1++;
-                if (!isFiltered || i <= 3*n1+5) {
+                if (!isFiltered || i <= 7*n1+5) {
                     i++;
                     w.write(s.substring(s.indexOf((int)'.')+3).replace("true", "1.0").replace("false", "0.0"));
                 }

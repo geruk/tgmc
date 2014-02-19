@@ -22,11 +22,11 @@ public class Main {
     static boolean isBiasInput = true, isBiasHidden1 = true, isBiasHidden2 = true, isBiasOutput = false;
     static int hidden1 = 300, hidden2 = 0;
     static double threshold = 0.99;
-    static int minute = 15; static double error = 0;
+    static int minute = 30; static double error = 0;
     static boolean backpropagation = false;
     static boolean keepRatioGood = true; //true to train on 10k records
     
-    static String networkFileToLoad = "t00.eg";
+    static String networkFileToLoad = null; // if null will not load
     static String networkFileToSave = null; // if null will save using time
     static String outputTextFile = "subm.txt";
     
@@ -74,10 +74,12 @@ public class Main {
         }
         System.out.printf("Training size: %d, Correct with threshold %f: %d", data.getRecordCount(), threshold, ok);
         
-        if (networkFileToSave == null)
-            EncogDirectoryPersistence.saveObject(new File(new Date().toString()), network);
-        else
-            EncogDirectoryPersistence.saveObject(new File(networkFileToSave), network);
+        if (networkFileToLoad == null) {
+            if (networkFileToSave == null)
+                EncogDirectoryPersistence.saveObject(new File(new Date().getTime() + ".eg"), network);
+            else
+                EncogDirectoryPersistence.saveObject(new File(networkFileToSave), network);
+        }
 
         System.out.println("Loading evaluation data..");
         data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(false, System.getProperty("evaluationData")), 318, 0, false, CSVFormat.ENGLISH, false);

@@ -2,12 +2,21 @@ package edu.drexel.cs.tgmc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+
+import org.encog.ConsoleStatusReportable;
+import org.encog.util.csv.CSVFormat;
+import org.encog.util.normalize.DataNormalization;
+import org.encog.util.normalize.input.InputField;
+import org.encog.util.normalize.input.InputFieldCSV;
+import org.encog.util.normalize.output.OutputFieldRangeMapped;
+import org.encog.util.normalize.target.NormalizationStorageCSV;
 
 /**
  * Convert data from IBM to Encog data
@@ -16,13 +25,14 @@ import java.io.OutputStreamWriter;
  */
 public class Convert {
     public static String convertToEncog(boolean maintainRatio, String dataFileName) {
-        String encogData = "/tmp/encogtrain.csv";
+        String encogData1 = "encogtrain1.csv";
+        String encogData2 = "encogtrain2.csv";
         int i = 0;
         try {
             int n1 = 0;
             System.out.println("Converting data from IBM format to Encog format..");
             FileInputStream in = new FileInputStream(dataFileName);
-            FileOutputStream out = new FileOutputStream(encogData);
+            FileOutputStream out = new FileOutputStream(encogData1);
             BufferedReader r = new BufferedReader(new InputStreamReader(in));
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(out));
             while (true) {
@@ -38,7 +48,25 @@ public class Convert {
             }
             r.close();
             w.close();
-            System.out.printf("Converted %d records and saved to %s\n", i, encogData);
+            System.out.printf("Converted %d records and saved to %s\n", i, encogData1);
+            
+            DataNormalization dn = new DataNormalization();
+            File filtered = new File(encogData1);
+            
+            for (int j=0;j<318;j++) {
+                InputField ifd;
+                dn.addInputField(ifd = new InputFieldCSV(true, filtered, j));
+                dn.addOutputField(new OutputFieldRangeMapped(ifd, 0, 1));
+            }
+            InputField ifd;
+            dn.addInputField(ifd = new InputFieldCSV(false, filtered, 318));
+            dn.addOutputField(new OutputFieldRangeMapped(ifd, 0, 1), true);
+            File out1 = new File(encogData2);
+            dn.setCSVFormat(CSVFormat.ENGLISH);
+            dn.setTarget(new NormalizationStorageCSV(CSVFormat.ENGLISH, out1));
+            dn.setReport(new ConsoleStatusReportable());
+            dn.process();
+            System.out.printf("Normalized %d records and saved to %s\n", i, encogData2);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -46,6 +74,6 @@ public class Convert {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return encogData;
+        return encogData2;
     }
 }

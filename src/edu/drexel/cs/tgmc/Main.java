@@ -11,7 +11,7 @@ import org.encog.util.simple.EncogUtility;
 public class Main {
     public static void main(String args[]) {
         System.out.println("Creating network..");
-        BasicNetwork network = EncogUtility.simpleFeedForward(318, 20, 30, 1, true);
+        BasicNetwork network = EncogUtility.simpleFeedForward(318, 450, 0, 1, false);
         
         System.out.println("Loading training data..");
         MLDataSet data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(true, System.getProperty("trainingData")), 318, 1, false, CSVFormat.ENGLISH, false);

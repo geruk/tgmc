@@ -56,7 +56,7 @@ public class Convert {
             for (int j=0;j<318;j++) {
                 InputField ifd;
                 dn.addInputField(ifd = new InputFieldCSV(true, filtered, j));
-                dn.addOutputField(new OutputFieldRangeMapped(ifd, 0, 1));
+                dn.addOutputField(new OutputFieldRangeMapped(ifd, 0.01 , 0.99));
             }
             InputField ifd;
             dn.addInputField(ifd = new InputFieldCSV(false, filtered, 318));

@@ -3,6 +3,7 @@ package edu.drexel.cs.tgmc;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
+import org.encog.ml.train.MLTrain;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
@@ -24,13 +25,13 @@ public class Main {
         MLDataSet data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(true, System.getProperty("trainingData")), 318, 1, false, CSVFormat.ENGLISH, false);
         
         // 1. Backpropagation Feedforward
-        Backpropagation trainingType = new Backpropagation(network, data);
+        // Backpropagation trainingType = new Backpropagation(network, data);
         // 2. ResilientPropagation Feedforward
-        // MLTrain trainingType = new ResilientPropagation(network, data);
+        MLTrain trainingType = new ResilientPropagation(network, data);
         //trainingType.setErrorFunction(new NewCalculationFunction());
         
         // 1. Train to x minutes
-        EncogUtility.trainConsole(trainingType, network, data, 1);
+        EncogUtility.trainConsole(trainingType, network, data, 3);
         // 2. Train to an error margin
         // EncogUtility.trainToError(trainingType, 0.00001);
         

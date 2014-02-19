@@ -15,20 +15,25 @@ import java.io.OutputStreamWriter;
  *
  */
 public class Convert {
-    public static String convertToEncog() {
+    public static String convertToEncog(boolean maintainRatio, String dataFileName) {
         String encogData = "/tmp/encogtrain.csv";
         int i = 0;
         try {
+            int n1 = 0;
             System.out.println("Converting data from IBM format to Encog format..");
-            FileInputStream in = new FileInputStream(System.getProperty("trainingData"));
+            FileInputStream in = new FileInputStream(dataFileName);
             FileOutputStream out = new FileOutputStream(encogData);
             BufferedReader r = new BufferedReader(new InputStreamReader(in));
             BufferedWriter w = new BufferedWriter(new OutputStreamWriter(out));
             while (true) {
-                i++;
                 String s = r.readLine();
                 if (s==null) break;
-                w.write(s.substring(s.indexOf((int)'.')+3).replace("true", "1.0").replace("false", "0.0"));
+                // try to have the true answers >= 1/2 false answers.
+                if (s.contains("true")) n1++;
+                if (!maintainRatio || i <= 3*n1+5) {
+                    i++;
+                    w.write(s.substring(s.indexOf((int)'.')+3).replace("true", "1.0").replace("false", "0.0"));
+                }
                 w.write("\n");
             }
             r.close();

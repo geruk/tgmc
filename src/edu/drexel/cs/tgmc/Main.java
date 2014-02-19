@@ -38,12 +38,12 @@ public class Main {
                     );
         }
 
-        System.out.println("Loading evaluation data..");
-        data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(false, System.getProperty("evaluationData")), 318, 0, false, CSVFormat.ENGLISH, false);
-        int i = 400000;
-        for (final MLDataPair pair : data) {
-            i++;
-            if ( Double.parseDouble(EncogUtility.formatNeuralData(network.compute(pair.getInput()))) > 0.75 ) System.out.println(i);
-        }
+//        System.out.println("Loading evaluation data..");
+//        data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(false, System.getProperty("evaluationData")), 318, 0, false, CSVFormat.ENGLISH, false);
+//        int i = 400000;
+//        for (final MLDataPair pair : data) {
+//            i++;
+//            if ( Double.parseDouble(EncogUtility.formatNeuralData(network.compute(pair.getInput()))) > 0.75 ) System.out.println(i);
+//        }
     }
 }

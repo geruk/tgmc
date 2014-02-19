@@ -31,7 +31,7 @@ public class Main {
         //trainingType.setErrorFunction(new NewCalculationFunction());
         
         // 1. Train to x minutes
-        EncogUtility.trainConsole(trainingType, network, data, 1);
+        EncogUtility.trainConsole(trainingType, network, data, 5);
         // 2. Train to an error margin
         // EncogUtility.trainToError(trainingType, 0.00001);
         
@@ -39,11 +39,11 @@ public class Main {
         // EncogUtility.evaluate(network, data);
         // 2. print id, ideal value & computed value
         int ok = 0;
-        double threshold = 0.7;
+        double threshold = 0.9;
         for (int i=0;i<data.getRecordCount();i++) {
             final MLDataPair pair = data.get(i);
-            if (pair.getIdeal().getData(0) == 1.0 && network.compute(pair.getInput()).getData(0) > 0.7) ok++;
-            if (pair.getIdeal().getData(0) == 0.0 && network.compute(pair.getInput()).getData(0) <= 0.7) ok++;
+            if (pair.getIdeal().getData(0) == 1.0 && network.compute(pair.getInput()).getData(0) > threshold) ok++;
+            if (pair.getIdeal().getData(0) == 0.0 && network.compute(pair.getInput()).getData(0) <= threshold) ok++;
         }
         System.out.printf("Training size: %d, Correct with threshold %f: %d", data.getRecordCount(), threshold, ok);
 
@@ -52,7 +52,7 @@ public class Main {
         int i = 400000;
         for (final MLDataPair pair : data) {
             i++;
-            if ( Double.parseDouble(EncogUtility.formatNeuralData(network.compute(pair.getInput()))) > 0.75 ) System.out.println(i);
+            if (network.compute(pair.getInput()).getData(0) > threshold ) System.out.println(i);
         }
     }
 }

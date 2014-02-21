@@ -34,7 +34,7 @@ public class Convert {
     
     public static String convertToEncog(boolean isTraining, boolean isFiltered, String dataFileName) {
         String encogData1 = "encogtrain1.csv";
-        String encogData2 = "encogtrain2.csv";
+        String encogData2 = (isTraining)? "encogtraint.csv":"encogtraine.csv";
         int i = 0;
         try {
             int n1 = 0;
@@ -46,11 +46,22 @@ public class Convert {
             while (true) {
                 String s = r.readLine();
                 if (s==null) break;
+                s = s.substring(s.indexOf((int)'.')+3);
                 // try to have the true answers >= 1/2 false answers.
-                if (s.contains("true")) n1++;
+                if (s.contains("true")) 
+                    {
+                        n1++;
+                        s = s.replace("true", "1.0");
+                        // remove this by next commit: increase the number of True answer by 20 times
+                        for (int j=0;j<20;j++)
+                            { w.write(s); w.write("\n"); } ///////*&*&^%*&^%*&^%*&^ ///////
+                    }
+                else
+                    s = s.replace("false", "0.0");
+                
                 if (!isFiltered || i <= 7*n1+5) {
                     i++;
-                    w.write(s.substring(s.indexOf((int)'.')+3).replace("true", "1.0").replace("false", "0.0"));
+                    w.write(s);
                 }
                 w.write("\n");
             }

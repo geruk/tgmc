@@ -18,22 +18,26 @@ import org.encog.util.csv.CSVFormat;
 import org.encog.util.simple.EncogUtility;
 
 public class Main {
-    
+    // variables to set up new nn 
     static boolean isBiasInput = true, isBiasHidden1 = true, isBiasHidden2 = true, isBiasOutput = false;
     static int hidden1 = 200, hidden2 = 0;
-    static double threshold = 0.97;
-    static int minute = 300; static double error = 0;
+    static int minute = 90; static double error = 0;
     static boolean backpropagation = false;
-    static boolean keepRatioGood = true; //true to train on 10k records
+    static boolean keepRatioGood = false; //true to train on 10k records
     
-    static String networkFileToLoad = "1392982546106.eg"; //null; // if null will not load
+    // variables to test old nn
+    static double threshold = 0.96;
+    static String networkFileToLoad = null; //null; // if null will not load
     static String networkFileToSave = null; // if null will save using time
     static String outputTextFile = "subm.txt";
+    static boolean reconvert = true;
     
     public static void main(String args[]) {
         System.out.println("Creating network..");
         BasicNetwork network = null;
-        MLDataSet data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(true, keepRatioGood, System.getProperty("trainingData")), 318, 1, false, CSVFormat.ENGLISH, false);
+        MLTrain trainingType = null;
+        String csvfile = (reconvert) ? Convert.convertToEncog(true, keepRatioGood, System.getProperty("trainingData")) : "encogtraint.csv";
+        MLDataSet data = EncogUtility.loadCSV2Memory(csvfile, 318, 1, false, CSVFormat.ENGLISH, false);
         if (networkFileToLoad != null) {
             network = (BasicNetwork) EncogDirectoryPersistence.loadObject(new File(networkFileToLoad));
         } else {
@@ -46,7 +50,6 @@ public class Main {
             network.getStructure().finalizeStructure();
             network.reset();
             System.out.println("Loading training data..");
-            MLTrain trainingType;
             if (backpropagation) {
                 // 1. Backpropagation Feedforward
                 trainingType = new Backpropagation(network, data);
@@ -76,14 +79,17 @@ public class Main {
         System.out.printf("Training size: %d, Correct with threshold %f: %d/%d correct 1s, %d/%d correct 0s", data.getRecordCount(), threshold, g1, n1, g0, n0);
         
         if (networkFileToLoad == null) {
-            if (networkFileToSave == null)
+            if (networkFileToSave == null) {
                 EncogDirectoryPersistence.saveObject(new File(new Date().getTime() + ".eg"), network);
+                EncogDirectoryPersistence.saveObject(new File("trainingcontinuation.train"), trainingType.pause());
+            }
             else
                 EncogDirectoryPersistence.saveObject(new File(networkFileToSave), network);
         }
 
         System.out.println("Loading evaluation data..");
-        data = EncogUtility.loadCSV2Memory(Convert.convertToEncog(false, System.getProperty("evaluationData")), 318, 0, false, CSVFormat.ENGLISH, false);
+        csvfile = (reconvert) ? Convert.convertToEncog(false, keepRatioGood, System.getProperty("evaluationData")) : "encogtraine.csv";
+        data = EncogUtility.loadCSV2Memory(csvfile, 318, 0, false, CSVFormat.ENGLISH, false);
         int i = 400000;
         try {
             FileWriter out = new FileWriter(outputTextFile);

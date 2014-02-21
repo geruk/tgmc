@@ -20,13 +20,13 @@ import org.encog.util.simple.EncogUtility;
 public class Main {
     
     static boolean isBiasInput = true, isBiasHidden1 = true, isBiasHidden2 = true, isBiasOutput = false;
-    static int hidden1 = 300, hidden2 = 0;
-    static double threshold = 0.99;
-    static int minute = 30; static double error = 0;
+    static int hidden1 = 200, hidden2 = 0;
+    static double threshold = 0.97;
+    static int minute = 300; static double error = 0;
     static boolean backpropagation = false;
     static boolean keepRatioGood = true; //true to train on 10k records
     
-    static String networkFileToLoad = null; // if null will not load
+    static String networkFileToLoad = "1392982546106.eg"; //null; // if null will not load
     static String networkFileToSave = null; // if null will save using time
     static String outputTextFile = "subm.txt";
     
@@ -45,7 +45,6 @@ public class Main {
             network.addLayer(new BasicLayer(new ActivationSigmoid(), isBiasOutput, 1));
             network.getStructure().finalizeStructure();
             network.reset();
-            
             System.out.println("Loading training data..");
             MLTrain trainingType;
             if (backpropagation) {
@@ -66,13 +65,15 @@ public class Main {
             }
         }
         
-        int ok = 0;
+        int n1 = 0, n0 = 0, g1 = 0, g0 = 0;
         for (int i=0;i<data.getRecordCount();i++) {
             final MLDataPair pair = data.get(i);
-            if (pair.getIdeal().getData(0) == 1.0 && network.compute(pair.getInput()).getData(0) > threshold) ok++;
-            if (pair.getIdeal().getData(0) == 0.0 && network.compute(pair.getInput()).getData(0) <= threshold) ok++;
+            if (pair.getIdeal().getData(0) == 0.0) n0++;
+            if (pair.getIdeal().getData(0) == 1.0) n1++;
+            if (pair.getIdeal().getData(0) == 1.0 && network.compute(pair.getInput()).getData(0) > threshold) g1++;
+            if (pair.getIdeal().getData(0) == 0.0 && network.compute(pair.getInput()).getData(0) <= threshold) g0++;
         }
-        System.out.printf("Training size: %d, Correct with threshold %f: %d", data.getRecordCount(), threshold, ok);
+        System.out.printf("Training size: %d, Correct with threshold %f: %d/%d correct 1s, %d/%d correct 0s", data.getRecordCount(), threshold, g1, n1, g0, n0);
         
         if (networkFileToLoad == null) {
             if (networkFileToSave == null)
@@ -90,10 +91,11 @@ public class Main {
                 i++;
                 if (network.compute(pair.getInput()).getData(0) > threshold ) 
                 {
-                    System.out.printf("%d\n\n", i);
                     out.write(i + "\n");
                 }
             }
+            System.out.printf("zzz\n");
+
             out.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block

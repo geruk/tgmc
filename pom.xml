@@ -11,7 +11,7 @@
 
     <properties>
         <project.datasetDir>${basedir}/resource</project.datasetDir>
-        <trainingFile>tgmctrain.csv</trainingFile>
+        <trainingFile>tgmctrain_added.csv</trainingFile>
         <evaluationFile>tgmcevaluation.csv</evaluationFile>
     </properties>
 

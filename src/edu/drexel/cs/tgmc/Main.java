@@ -23,18 +23,18 @@ public class Main {
     // variables to set up new nn 
     static boolean isBiasInput = true, isBiasHidden1 = true, isBiasHidden2 = true, isBiasOutput = false;
     static int hidden1 = 240, hidden2 = 0;
-    static int minute = 90; static double error = 0;
+    static int minute = 1020; static double error = 0;
     static boolean backpropagation = false;
     static boolean keepRatioGood = false; //true to train on 10k records
     
     // variables to test old nn
-    static double threshold = 0.75;
+    static double threshold = 0.95;
     static String networkFileToLoad = null; //null; // if null will not load
 //    static String[] fileLoads = {"1392848029023.eg", "1393091956276.eg", "1392982546106.eg", "1392831312093.eg"};
 //    static String[] fileLoads = {"1392810540501.eg"};
     static String networkFileToSave = null; // if null will save using time
     static String outputTextFile = "subm.txt";
-    static boolean reconvert = true;
+    static boolean reconvert = false;
     
     public static void main(String args[]) {
         System.out.println("Creating network..");
@@ -104,7 +104,21 @@ public class Main {
             
             if (minute != 0) {
                 // 1. Train to x minutes
+                long d = new Date().getTime();
+                long dd = new Date().getTime();
+                int epoc = 0;
+                do {
+                    epoc++;
+                    trainingType.iteration();
+                    if (epoc%100 == 0)
+                        if ((new Date().getTime() - dd)/(1000*60) > 120) {
+                            EncogDirectoryPersistence.saveObject(new File(hidden1 + "_" + hidden2 + "_" + new Date().getTime() + ".eg"), network);
+                            dd = new Date().getTime();
+                        }
+                } while ((new Date().getTime()-d)/(1000*60) >= minute);
+                
                 EncogUtility.trainConsole(trainingType, network, data, minute);
+                
             } else {
                 // 2. Train to an error margin
                 EncogUtility.trainToError(trainingType, error);
